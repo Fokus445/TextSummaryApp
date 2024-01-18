@@ -8,6 +8,8 @@ Welcome to the Document Summarization AI App! This application leverages the Fas
 * FastAPI Framework: The application is built on the FastAPI framework, providing high performance and easy-to-use APIs for document summarization.
 
 * Transformers Pipeline Library: We utilize the Transformers pipeline library to integrate state-of-the-art natural language processing models for text summarization, ensuring the best possible summarization results. It uses distilbart-cnn-12–6 model and abstractive summarization technique.
+    ![Screenshot](img/info.jpg)
+    ![Screenshot](img/info1.png)
 
 * Python Regex for Cleaning: Before displaying the summaries, we employ Python regular expressions (regex) to clean and enhance the quality of the generated summaries.
 
