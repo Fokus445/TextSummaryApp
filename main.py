@@ -1,31 +1,26 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from transformers import pipeline
+import re
 
 app = FastAPI()
-
+templates = Jinja2Templates(directory="templates")
 summarizer = pipeline("summarization")
 
-@app.get("/")
-def read_root():
-    return """
-    <html>
-        <head>
-            <title>Document Summarizer</title>
-        </head>
-        <body>
-            <h1>Document Summarizer</h1>
-            <form action="/summarize/" method="post" enctype="multipart/form-data">
-                <label for="file">Upload a document:</label>
-                <input type="file" name="file" accept=".txt, .doc, .docx, .pdf" required>
-                <button type="submit">Summarize</button>
-            </form>
-        </body>
-    </html>
-    """
+def clean_text(text):
+    # Remove spaces before periods at the end of sentences
+    text = re.sub(r'\s+(\.)', r'\1', text)
+    # Capitalize the first letter of each sentence
+    text = '. '.join(sentence.capitalize() for sentence in text.split('. '))
+    return text
 
-@app.post("/summarize/")
-async def create_upload_file(file: UploadFile = File(...)):
+@app.get("/", response_class=HTMLResponse)
+def index_page(request: Request, summarized_text: str = None):
+    return templates.TemplateResponse("index.html", {"request": request, "summarized_text": summarized_text})
+
+@app.post("/summarize/", response_class=HTMLResponse)
+async def summarize_text_from_file(file: UploadFile = File(...), request: Request = None):
     if not file.filename.endswith(('.txt', '.doc', '.docx', '.pdf')):
         raise HTTPException(status_code=400, detail="Only text, doc, docx, and pdf files are supported.")
 
@@ -33,9 +28,7 @@ async def create_upload_file(file: UploadFile = File(...)):
 
     try:
         text = contents.decode("utf-8")
-        summarized_text = summarizer(text, max_length=150, min_length=50, length_penalty=2.0, num_beams=4, temperature=0.7)[0]['summary_text']
-        return {"original_text": text, "summarized_text": summarized_text}
+        summarized_text = summarizer(text, max_length=250, min_length=100, length_penalty=2.0, num_beams=4, temperature=0.7)[0]['summary_text']
+        return index_page(request, summarized_text=clean_text(summarized_text))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error summarizing the document: {str(e)}")
-
-

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Summarizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 50%;
+            text-align: left;
+        }
+
+        h2 {
+            color: #555;
+        }
+
+        p {
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Document Summarizer</h1>
+    <form action="/summarize/" method="post" enctype="multipart/form-data">
+        <label for="file">Upload a document:</label>
+        <input type="file" name="file" accept=".txt, .doc, .docx, .pdf" required>
+        <button type="submit">Summarize</button>
+    </form>
+
+
+    {% if summarized_text %}
+        <div class="result-container">
+            <h2>Summarized Text:</h2>
+            <p>{{ summarized_text }}</p>
+        </div>
+    {% endif %}
+</body>
+</html>
